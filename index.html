@@ -33,9 +33,7 @@
   }
 
   /* ---- Barra de pestañas (móvil) ---- */
-  .tabbar{
-    display:none;
-  }
+  .tabbar{ display:none; }
   @media (max-width:959px){
     .tabbar{
       display:flex; gap:.5rem; padding:.25rem; background:rgba(255,255,255,.03);
@@ -44,26 +42,21 @@
     }
     .tab{
       flex:1; text-align:center; padding:.6rem .7rem; border-radius:.6rem; cursor:pointer;
-      background:#0c1427; border:1px solid #1a2540; color:var(--txt); font-weight:500;
-      white-space:nowrap;
+      background:#0c1427; border:1px solid #1a2540; color:var(--txt); font-weight:500; white-space:nowrap;
     }
     .tab[aria-selected="true"]{
-      background:#13203a; border-color:#2a3a63;
-      box-shadow: inset 0 0 0 1px #2a3a63;
+      background:#13203a; border-color:#2a3a63; box-shadow: inset 0 0 0 1px #2a3a63;
     }
   }
 
-  .acc-item{
-    border:1px solid #1a2540; border-radius:.8rem; background:#0c1427; overflow:hidden;
-  }
+  .acc-item{ border:1px solid #1a2540; border-radius:.8rem; background:#0c1427; overflow:hidden; }
   .acc-btn{
     width:100%; text-align:left; padding:.85rem 1rem; background:transparent; color:var(--txt);
-    border:none; display:flex; align-items:center; justify-content:space-between; cursor:pointer;
-    font-size:1rem;
+    border:none; display:flex; align-items:center; justify-content:space-between; cursor:pointer; font-size:1rem;
   }
-  .acc-btn:hover{ background:#0f1724; }
   .acc-btn .chev{ transition: transform .22s ease; opacity:.8; }
   .acc-btn[aria-expanded="true"] .chev{ transform: rotate(90deg); }
+  .acc-btn:hover{ background:#0f1724; }
 
   .acc-panel{
     grid-template-columns:140px 1fr;
@@ -72,20 +65,22 @@
     transition: max-height .25s ease, padding .25s ease;
     max-height:0; padding-top:0; padding-bottom:0; overflow:hidden;
   }
-  .acc-item.open .acc-panel{
-    max-height:900px; padding-top:.8rem; padding-bottom:.9rem;
-  }
+  .acc-item.open .acc-panel{ max-height:900px; padding-top:.8rem; padding-bottom:.9rem; }
 
-  /* En móvil: usar SOLO tabs → ocultamos botones de acordeón y mostramos 1 panel */
+  /* En móvil: tabs → ocultar botones de acordeón, mostrar solo el panel activo */
   @media (max-width:959px){
     .acc-btn{ display:none; }
-    .acc-item{ border:1px solid #1a2540; }
     .acc-panel{ max-height:none; padding:.9rem 1rem; display:none; }
     .acc-item.open .acc-panel{ display:grid; }
   }
 
   .row{ display:contents; }
   .row label{ align-self:center; }
+
+  /* filas apiladas (label encima del control) */
+  .row.stack{ display:grid; grid-template-columns:1fr; grid-column:1 / -1; }
+  .row.stack label{ margin-bottom:.35rem; }
+
   input[type="range"], input[type="color"], input[type="number"], select{
     width:100%; background:#0f1724; color:var(--txt);
     border:1px solid #233253; border-radius:.5rem; padding:.38rem; touch-action:manipulation;
@@ -115,9 +110,7 @@
 
     <!-- FLOR -->
     <section class="acc-item open" id="sec-flor">
-      <button class="acc-btn" aria-expanded="true">
-        <span>Flor</span><span class="chev">▶</span>
-      </button>
+      <button class="acc-btn" aria-expanded="true"><span>Flor</span><span class="chev">▶</span></button>
       <div class="acc-panel">
         <div class="row"><label for="petals">Nº pétalos</label><input id="petals" type="range" min="3" max="64" value="12"></div>
         <div class="row"><label for="pLen">Largo pétalo</label><input id="pLen" type="range" min="0.3" max="1.0" step="0.01" value="0.8"></div>
@@ -130,9 +123,7 @@
 
     <!-- COLOR -->
     <section class="acc-item" id="sec-color">
-      <button class="acc-btn" aria-expanded="false">
-        <span>Color</span><span class="chev">▶</span>
-      </button>
+      <button class="acc-btn" aria-expanded="false"><span>Color</span><span class="chev">▶</span></button>
       <div class="acc-panel">
         <div class="row"><label for="baseColor">Color base</label><input id="baseColor" type="color" value="#ff5ea8"></div>
         <div class="row"><label for="hVar">Variación (°)</label><input id="hVar" type="range" min="0" max="60" step="1" value="16"></div>
@@ -143,9 +134,7 @@
 
     <!-- CENTRO -->
     <section class="acc-item" id="sec-centro">
-      <button class="acc-btn" aria-expanded="false">
-        <span>Centro</span><span class="chev">▶</span>
-      </button>
+      <button class="acc-btn" aria-expanded="false"><span>Centro</span><span class="chev">▶</span></button>
       <div class="acc-panel">
         <div class="row"><label for="coreR">Radio centro</label><input id="coreR" type="range" min="0" max="0.35" step="0.01" value="0.18"></div>
         <div class="row"><label for="pistils">Nº pistilos</label><input id="pistils" type="range" min="0" max="80" step="1" value="24"></div>
@@ -156,9 +145,7 @@
 
     <!-- MODOS -->
     <section class="acc-item" id="sec-modos">
-      <button class="acc-btn" aria-expanded="false">
-        <span>Modos</span><span class="chev">▶</span>
-      </button>
+      <button class="acc-btn" aria-expanded="false"><span>Modos</span><span class="chev">▶</span></button>
       <div class="acc-panel">
         <div class="row"><label for="seed">Semilla</label><input id="seed" type="number" step="1" value="12345"></div>
         <div class="row" style="grid-column:1/-1">
@@ -167,10 +154,12 @@
             <button class="btn" id="randomize">Aleatorio</button>
           </div>
         </div>
-        <div class="row"><label for="spin">Rotar</label>
+        <!-- Etiqueta encima del selector -->
+        <div class="row stack"><label for="spin">Rotar</label>
           <select id="spin"><option value="off">Off</option><option value="slow" selected>Lenta</option><option value="med">Media</option><option value="fast">Rápida</option></select>
         </div>
-        <div class="row"><label for="breathe">“Respirar”</label>
+        <!-- Etiqueta encima del selector -->
+        <div class="row stack"><label for="breathe">“Respirar”</label>
           <select id="breathe"><option value="off" selected>Off</option><option value="soft">Suave</option><option value="deep">Profunda</option></select>
         </div>
         <p class="hint">Tip: toca “Aleatorio” para explorar paletas y formas nuevas.</p>
@@ -190,7 +179,6 @@
   const tabs = tabbar ? Array.from(tabbar.querySelectorAll('.tab')) : [];
   const items = Array.from(document.querySelectorAll('.acc-item'));
 
-  // Tab click (móvil)
   if (tabbar){
     tabbar.addEventListener('click', e=>{
       const btn = e.target.closest('.tab'); if(!btn) return;
@@ -199,8 +187,6 @@
       tabs.forEach(t => t.setAttribute('aria-selected', String(t===btn)));
       try { localStorage.setItem('flower.activeTab', id); } catch(e){}
     });
-
-    // Restaurar última pestaña
     try {
       const saved = localStorage.getItem('flower.activeTab');
       if (saved && document.getElementById(saved)) {
@@ -210,7 +196,6 @@
     } catch(e){}
   }
 
-  // Acordeón (desktop)
   const acc = document.getElementById('accordion');
   acc.addEventListener('click', (e)=>{
     const btn = e.target.closest('.acc-btn'); if(!btn) return;
@@ -221,9 +206,7 @@
     btn.setAttribute('aria-expanded', String(!isOpen));
   });
 
-  function openSection(id){
-    items.forEach(it => it.classList.toggle('open', it.id===id));
-  }
+  function openSection(id){ items.forEach(it => it.classList.toggle('open', it.id===id)); }
 
   /* ---------- utilidades dibujo ---------- */
   function rng(seed){ return function(){ let t = seed += 0x6D2B79F5; t = Math.imul(t ^ t>>>15, t | 1); t ^= t + Math.imul(t ^ t>>>7, t | 61); return ((t ^ t>>>14) >>> 0) / 4294967296; } }
@@ -249,11 +232,19 @@
   function draw(now){
     const dt = Math.min(0.033, (now - tLast)/1000); tLast = now;
 
+    // Rotación
     const spinSpeed = (ui.spin.value==='off'?0: ui.spin.value==='slow'?0.05: ui.spin.value==='med'?0.12:0.28);
     angleAnim += spinSpeed * dt;
 
-    const breathAmp = (ui.breathe.value==='off'?0: ui.breathe.value==='soft'?0.02:0.05);
-    const breath = 1 + Math.sin(now*0.002)*breathAmp;
+    // Respiración (periodos largos y más amplitud)
+    const breathModes = {
+      off:  { amp: 0.00, period: 1 },
+      soft: { amp: 0.06, period: 6 },   // ~6s ciclo completo
+      deep: { amp: 0.12, period: 12 }   // ~12s ciclo completo
+    };
+    const bm = breathModes[ui.breathe.value] || breathModes.off;
+    const omega = (2*Math.PI) / (bm.period*1000); // rad/ms
+    const breath = 1 + Math.sin(now * omega) * bm.amp;
 
     const center = { x: canvas.clientWidth/2, y: canvas.clientHeight/2 };
     const R = Math.min(canvas.clientWidth, canvas.clientHeight) * 0.38 * breath;
