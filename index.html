@@ -16,21 +16,41 @@
   .viewer{ flex:1; display:flex; align-items:center; justify-content:center; padding:1rem; }
   .stage{
     position:relative; display:grid; place-items:center;
-    width:min(92vw, 720px);
-    aspect-ratio:1/1;                 /* contenedor cuadrado */
+    width:min(92vw, 720px); aspect-ratio:1/1;
     border:8px solid #151f33; border-radius:18px; overflow:hidden;
     box-shadow:0 10px 40px rgba(0,0,0,.45);
     background: radial-gradient(120% 120% at 50% 15%, #0f1730 0%, #0b0f1a 65%);
   }
   canvas{ width:100%; height:100%; display:block; background:transparent; }
 
-  /* CONTROLES (acordeón) */
+  /* CONTROLES (acordeón / tabs) */
   .controls{
     background:var(--panel); border-top:1px solid var(--line);
     padding:1rem; display:grid; gap:.9rem;
   }
   @media (min-width:960px){
     .controls{ width:360px; border-top:none; border-left:1px solid var(--line); overflow:auto; }
+  }
+
+  /* ---- Barra de pestañas (móvil) ---- */
+  .tabbar{
+    display:none;
+  }
+  @media (max-width:959px){
+    .tabbar{
+      display:flex; gap:.5rem; padding:.25rem; background:rgba(255,255,255,.03);
+      border:1px solid #1a2540; border-radius:.8rem; position:sticky; top:0; z-index:5;
+      backdrop-filter:saturate(120%) blur(6px);
+    }
+    .tab{
+      flex:1; text-align:center; padding:.6rem .7rem; border-radius:.6rem; cursor:pointer;
+      background:#0c1427; border:1px solid #1a2540; color:var(--txt); font-weight:500;
+      white-space:nowrap;
+    }
+    .tab[aria-selected="true"]{
+      background:#13203a; border-color:#2a3a63;
+      box-shadow: inset 0 0 0 1px #2a3a63;
+    }
   }
 
   .acc-item{
@@ -49,21 +69,26 @@
     grid-template-columns:140px 1fr;
     display:grid; gap:.6rem; align-items:center;
     padding:0 1rem; border-top:1px solid #1a2540;
-
-    /* colapso animado */
-    transition: grid-template-rows .25s ease, padding .25s ease, max-height .25s ease;
-    max-height: 0; padding-top:0; padding-bottom:0; overflow:hidden;
+    transition: max-height .25s ease, padding .25s ease;
+    max-height:0; padding-top:0; padding-bottom:0; overflow:hidden;
   }
   .acc-item.open .acc-panel{
-    max-height: 800px; /* suficiente para el contenido */
-    padding-top:.8rem; padding-bottom:.9rem;
+    max-height:900px; padding-top:.8rem; padding-bottom:.9rem;
   }
 
-  .row{ display:contents; } /* cada par etiqueta+control ocupa la rejilla */
+  /* En móvil: usar SOLO tabs → ocultamos botones de acordeón y mostramos 1 panel */
+  @media (max-width:959px){
+    .acc-btn{ display:none; }
+    .acc-item{ border:1px solid #1a2540; }
+    .acc-panel{ max-height:none; padding:.9rem 1rem; display:none; }
+    .acc-item.open .acc-panel{ display:grid; }
+  }
+
+  .row{ display:contents; }
   .row label{ align-self:center; }
   input[type="range"], input[type="color"], input[type="number"], select{
-    width:100%; background:#0f1724; color:var(--txt); border:1px solid #233253; border-radius:.5rem; padding:.38rem;
-    touch-action:manipulation;
+    width:100%; background:#0f1724; color:var(--txt);
+    border:1px solid #233253; border-radius:.5rem; padding:.38rem; touch-action:manipulation;
   }
   .inline{ display:flex; gap:.5rem; align-items:center }
   .btn{ background:#15213a; border:1px solid #2a3a63; color:var(--txt); padding:.45rem .7rem; border-radius:.55rem; cursor:pointer; }
@@ -80,6 +105,14 @@
   </div>
 
   <div class="controls" id="accordion">
+    <!-- TABBAR (solo móvil) -->
+    <div class="tabbar" id="tabbar" role="tablist" aria-label="Controles">
+      <button class="tab" role="tab" aria-selected="true" data-target="sec-flor">Flor</button>
+      <button class="tab" role="tab" aria-selected="false" data-target="sec-color">Color</button>
+      <button class="tab" role="tab" aria-selected="false" data-target="sec-centro">Centro</button>
+      <button class="tab" role="tab" aria-selected="false" data-target="sec-modos">Modos</button>
+    </div>
+
     <!-- FLOR -->
     <section class="acc-item open" id="sec-flor">
       <button class="acc-btn" aria-expanded="true">
@@ -152,9 +185,33 @@
   const canvas = $('flower');
   const ctx = canvas.getContext('2d');
 
-  /* ---------- acordeón ---------- */
+  /* ---------- TABS (móvil) + acordeón (desktop) ---------- */
+  const tabbar = document.getElementById('tabbar');
+  const tabs = tabbar ? Array.from(tabbar.querySelectorAll('.tab')) : [];
+  const items = Array.from(document.querySelectorAll('.acc-item'));
+
+  // Tab click (móvil)
+  if (tabbar){
+    tabbar.addEventListener('click', e=>{
+      const btn = e.target.closest('.tab'); if(!btn) return;
+      const id = btn.dataset.target;
+      openSection(id);
+      tabs.forEach(t => t.setAttribute('aria-selected', String(t===btn)));
+      try { localStorage.setItem('flower.activeTab', id); } catch(e){}
+    });
+
+    // Restaurar última pestaña
+    try {
+      const saved = localStorage.getItem('flower.activeTab');
+      if (saved && document.getElementById(saved)) {
+        openSection(saved);
+        tabs.forEach(t => t.setAttribute('aria-selected', String(t.dataset.target===saved)));
+      }
+    } catch(e){}
+  }
+
+  // Acordeón (desktop)
   const acc = document.getElementById('accordion');
-  const items = Array.from(acc.querySelectorAll('.acc-item'));
   acc.addEventListener('click', (e)=>{
     const btn = e.target.closest('.acc-btn'); if(!btn) return;
     const item = btn.parentElement;
@@ -163,6 +220,10 @@
     item.classList.toggle('open', !isOpen);
     btn.setAttribute('aria-expanded', String(!isOpen));
   });
+
+  function openSection(id){
+    items.forEach(it => it.classList.toggle('open', it.id===id));
+  }
 
   /* ---------- utilidades dibujo ---------- */
   function rng(seed){ return function(){ let t = seed += 0x6D2B79F5; t = Math.imul(t ^ t>>>15, t | 1); t ^= t + Math.imul(t ^ t>>>7, t | 61); return ((t ^ t>>>14) >>> 0) / 4294967296; } }
@@ -296,6 +357,9 @@
     tmp.fillStyle=`hsl(${hue2},85%,75%)`; tmp.fillRect(0,0,1,1);
     ui.pisColor.value = rgbToHex(tmp.getImageData(0,0,1,1).data);
   });
+
+  function clamp01(v){ return Math.max(0.01, Math.min(1, v)); }
+  function clampRange(v,a,b){ return Math.max(a, Math.min(b, v)); }
 
   /* nitidez DPR */
   function fitCanvas(){
